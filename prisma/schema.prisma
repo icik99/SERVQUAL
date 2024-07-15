@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Respondent {
+  id           String   @id @default(uuid()) @db.VarChar(100)
+  nama         String?  @db.VarChar(100)
+  jenisKelamin Gender   @default(MALE)
+  pendidikan   String   @db.VarChar(100)
+  usia         String   @db.VarChar(100)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  surveys      Survey[]
+}
+
+model Survey {
+  id           String        @id @default(uuid()) @db.VarChar(100)
+  respondent   Respondent    @relation(fields: [respondentId], references: [id])
+  respondentId String        @unique
+  expectation  Expectation[]
+  perception   Perception[]
+}
+
+model Expectation {
+  id                String              @id @default(uuid()) @db.VarChar(100)
+  surveyId          String
+  Survey            Survey              @relation(fields: [surveyId], references: [id])
+  expectationAnswer ExpectationAnswer[]
+}
+
+model ExpectationAnswer {
+  id        String      @id @default(uuid()) @db.VarChar(100)
+  dimension String
+  question  String
+  answer    Int
+  result    Expectation @relation(fields: [id], references: [id])
+}
+
+model Perception {
+  id               String             @id @default(uuid()) @db.VarChar(100)
+  surveyId         String
+  Survey           Survey             @relation(fields: [surveyId], references: [id])
+  perceptionAnswer PerceptionAnswer[]
+}
+
+model PerceptionAnswer {
+  id        String     @id @default(uuid()) @db.VarChar(100)
+  dimension String
+  question  String
+  answer    Int
+  result    Perception @relation(fields: [id], references: [id])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
