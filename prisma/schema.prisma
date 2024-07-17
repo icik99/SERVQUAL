@@ -8,52 +8,54 @@ datasource db {
 }
 
 model Respondent {
-  id           String   @id @default(uuid()) @db.VarChar(100)
-  nama         String?  @db.VarChar(100)
-  jenisKelamin Gender   @default(MALE)
-  pendidikan   String   @db.VarChar(100)
-  usia         String   @db.VarChar(100)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  surveys      Survey[]
+  id           String  @id @default(uuid()) @db.VarChar(100)
+  nama         String? @db.VarChar(100)
+  jenisKelamin Gender  @default(MALE)
+  pendidikan   String  @db.VarChar(100)
+  usia         String  @db.VarChar(100)
+  survey       Survey?
+
+  @@map("respondent")
 }
 
 model Survey {
-  id           String        @id @default(uuid()) @db.VarChar(100)
-  respondent   Respondent    @relation(fields: [respondentId], references: [id])
-  respondentId String        @unique
-  expectation  Expectation[]
-  perception   Perception[]
+  id           String     @id @default(uuid()) @db.VarChar(100)
+  respondentId String     @unique
+  respondent   Respondent @relation(fields: [respondentId], references: [id])
+  tanggal      DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+  result       Result[]
+
+  @@map("survey")
+}
+
+model Result {
+  id          String        @id @default(uuid()) @db.VarChar(100)
+  surveyId    String
+  dimension   String
+  expectation Expectation[]
+  perception  Perception[]
+  survey      Survey        @relation(fields: [surveyId], references: [id])
+
+  @@map("result")
 }
 
 model Expectation {
-  id                String              @id @default(uuid()) @db.VarChar(100)
-  surveyId          String
-  Survey            Survey              @relation(fields: [surveyId], references: [id])
-  expectationAnswer ExpectationAnswer[]
-}
+  id       String @id @default(uuid()) @db.VarChar(100)
+  resultId String
+  result   Result @relation(fields: [resultId], references: [id])
+  answer   Int
 
-model ExpectationAnswer {
-  id        String      @id @default(uuid()) @db.VarChar(100)
-  dimension String
-  question  String
-  answer    Int
-  result    Expectation @relation(fields: [id], references: [id])
+  @@map("expectation")
 }
 
 model Perception {
-  id               String             @id @default(uuid()) @db.VarChar(100)
-  surveyId         String
-  Survey           Survey             @relation(fields: [surveyId], references: [id])
-  perceptionAnswer PerceptionAnswer[]
-}
+  id       String @id @default(uuid()) @db.VarChar(100)
+  resultId String
+  result   Result @relation(fields: [resultId], references: [id])
+  answer   Int
 
-model PerceptionAnswer {
-  id        String     @id @default(uuid()) @db.VarChar(100)
-  dimension String
-  question  String
-  answer    Int
-  result    Perception @relation(fields: [id], references: [id])
+  @@map("perception")
 }
 
 enum Gender {

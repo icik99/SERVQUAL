@@ -1,9 +1,10 @@
 import express from "express";
-import {test, testPost} from "../controller/test.js";
-
+import SurveyController from "../controller/surveyController.js";
+import SurveyService from "../service/surveyService.js";
+import surveyController from "../controller/surveyController.js";
 const publicRouter = express.Router();
 
-publicRouter.get("/api/test", test);
-publicRouter.post("/api/test", testPost);
+publicRouter.post('/api/survey', SurveyController.create);
+publicRouter.get('/api/survey/:id', surveyController.get);
 
 export { publicRouter };
