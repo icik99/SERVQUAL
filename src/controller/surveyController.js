@@ -15,9 +15,22 @@ const create = async (req, res, next) =>{
     }
 }
 
-const get = async(req, res,next) => {
+const getAll = async (req, res, next) =>{
+    try  {
+        const data =  await  SurveyService.getAll()
+        res.status(200).json({
+            status : 200,
+            message: "succes retrieved all surveys data!",
+            data: data,
+        });
+    }catch (error) {
+        next(error);
+    }
+}
+
+const getById = async(req, res,next) => {
     try {
-        const data =await  SurveyService.get(req.params.id)
+        const data =await  SurveyService.getById(req.params.id)
         res.status(200).json({
             status : 200,
             message: "succes retrieved survey data!",
@@ -28,4 +41,4 @@ const get = async(req, res,next) => {
     }
 }
 
-export default {create, get}
+export default {create, getById,getAll}

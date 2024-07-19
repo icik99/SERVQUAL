@@ -44,7 +44,7 @@ const create = async (payload) => {
 }
 
 
-const get = async (payload) => {
+const getById = async (payload) => {
 
     const data =  await db.survey.findFirst({
         where : {
@@ -75,17 +75,66 @@ const get = async (payload) => {
         throw new ResponseError(404, "Survey not found.");
     }
 
-   return {
+
+    const average = (arr) => {
+        if (arr.length < 1) {
+            return 0;
+        }
+        return (arr.reduce((a, b) => a + b, 0)) / arr.length
+    }
+
+
+    const interpretation = (gap) => {
+        if (gap < 0) {
+            return 'Memerlukan Perhatian Khusus'
+        }
+
+        return 'Kelebihan / Keunggulan Layanan'
+    }
+
+
+   return  {
         tanggal: data.tanggal,
         respondent: data.respondent,
-        result: data.result.map(item => ({
-            dimension: item.dimension,
-            expectation: item.expectation.map(answer => answer.answer),
-            perception: item.perception.map(answer => answer.answer)
-        }))
+        result: data.result.map((item) => {
+            const averageExp = average(item.expectation.map(answer => answer.answer))
+            const averagePer = average(item.perception.map(answer => answer.answer))
+            const gap = averagePer - averageExp
+            const resultInterpretation = interpretation(gap)
+            return ({
+                dimension: item.dimension,
+                average : {
+                    expectation : averageExp,
+                    perception : averagePer
+                },
+                gap,
+                interpretation : resultInterpretation
+            })
+        })
+
     }
 
 
 }
 
-export default {create, get};
+const getAll = async () => {
+     const data = await  db.survey.findMany({
+        select : {
+            respondent : {
+                select : {
+                    nama : true, usia : true,pendidikan : true, jenisKelamin : true
+                }
+            }, id : true, tanggal : true
+        }
+    })
+
+
+    if (data.length === 0){
+        throw new ResponseError(404, "No Surveys not found");
+    }
+
+    return data
+
+}
+
+export default {create, getById, getAll};
