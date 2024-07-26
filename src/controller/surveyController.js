@@ -1,10 +1,9 @@
 import SurveyService from "../service/surveyService.js";
 
 const create = async (req, res, next) =>{
-
     try {
         const payload = req.body
-        const data =await  SurveyService.create(payload)
+        const data = await  SurveyService.create(payload)
         res.status(200).json({
             status : 200,
             message: "thanks for submitted survey!",

@@ -4,7 +4,7 @@ import {ResponseError} from "../error/response-error.js";
 
 const create = async (payload) => {
 
-    const {nama, jenisKelamin, pendidikan, usia, surveyResult } = validate(surveySchema, payload)
+    const {nama, jenisKelamin, pendidikan, usia, surveyResult } = await validate(surveySchema, payload)
 
     return await  db.respondent.create({
         data: {
