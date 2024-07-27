@@ -84,12 +84,55 @@ const getById = async (payload) => {
     }
 
 
-    const interpretation = (gap) => {
-        if (gap < 0) {
-            return 'Memerlukan Perhatian Khusus'
-        }
+    const interpretation = (gap, dimension) => {
+        let message = '';
 
-        return 'Kelebihan / Keunggulan Layanan'
+    switch(dimension) {
+        case 'Tangible':
+            message = gap < 0 
+                ? 'Memerlukan Perhatian Khusus, Fasilitas fisik, peralatan, atau penampilan staf tidak memenuhi harapan pelanggan. Perlu peningkatan kualitas fisik dan estetika untuk menciptakan kesan yang lebih baik.' 
+                : gap === 0 
+                    ? 'Memenuhi Harapan Pelanggan, Fasilitas dan penampilan saat ini sesuai dengan harapan pelanggan. Terus pertahankan standar ini untuk menjaga kepuasan.' 
+                    : 'Fasilitas fisik dan penampilan melebihi harapan pelanggan. Ini menunjukkan bahwa aspek ini adalah kekuatan kompetitif yang harus dipertahankan dan ditonjolkan.';
+            break;
+
+        case 'Reliability':
+            message = gap < 0 
+                ? 'Memerlukan Perhatian Khusus, Keandalan layanan tidak memenuhi harapan pelanggan. Perlu peningkatan konsistensi dan ketepatan dalam penyampaian layanan.' 
+                : gap === 0 
+                    ? 'Memenuhi Harapan Pelanggan, Layanan saat ini konsisten dengan harapan pelanggan. Terus jaga konsistensi ini untuk memastikan kepuasan pelanggan.' 
+                    : 'Layanan yang diberikan melebihi harapan pelanggan dalam hal keandalan. Ini menunjukkan bahwa area ini adalah keunggulan yang bisa dipromosikan.';
+            break;
+
+        case 'Responsiveness':
+            message = gap < 0 
+                ? 'Memerlukan Perhatian Khusus, Kesediaan untuk membantu atau kecepatan respons tidak memenuhi harapan pelanggan. Perbaiki kecepatan dan efektivitas tanggapan terhadap permintaan pelanggan.' 
+                : gap === 0 
+                    ? 'Memenuhi Harapan Pelanggan, Kecepatan dan kesiapan tanggapan saat ini sesuai dengan harapan pelanggan. Pertahankan standar ini untuk kepuasan pelanggan.' 
+                    : 'Responsivitas layanan melebihi harapan pelanggan. Ini menunjukkan kekuatan dalam hal tanggapan cepat yang harus terus dipertahankan.';
+            break;
+
+        case 'Assurance':
+            message = gap < 0 
+                ? 'Memerlukan Perhatian Khusus, Pengetahuan, kepercayaan, dan kesopanan staf tidak memenuhi harapan pelanggan. Perlu pelatihan tambahan untuk meningkatkan kepercayaan pelanggan.' 
+                : gap === 0 
+                    ? 'Memenuhi Harapan Pelanggan, Staf saat ini cukup terampil dan sopan, sesuai dengan harapan pelanggan. Pertahankan kualitas ini untuk menjaga kepercayaan pelanggan.' 
+                    : 'Kualitas jaminan dan kepercayaan melebihi harapan pelanggan. Ini menunjukkan bahwa staf memberikan kepercayaan lebih yang merupakan keunggulan layanan.';
+            break;
+
+        case 'Emphaty':
+            message = gap < 0 
+                ? 'Memerlukan Perhatian Khusus, Perhatian individual dan pemahaman terhadap kebutuhan pelanggan tidak memenuhi harapan. Perbaiki perhatian pribadi dan pemahaman terhadap pelanggan.' 
+                : gap === 0 
+                    ? 'Memenuhi Harapan Pelanggan, Staf saat ini menunjukkan perhatian dan pemahaman yang sesuai dengan harapan pelanggan. Terus jaga kualitas ini untuk kepuasan pelanggan.' 
+                    : 'Perhatian dan pemahaman terhadap pelanggan melebihi harapan. Ini menunjukkan kekuatan dalam memberikan layanan personal yang harus terus dipertahankan.';
+            break;
+
+        default:
+            message = 'Dimensi tidak dikenal: Pastikan dimensi yang diberikan benar.';
+    }
+
+    return message;
     }
 
 
@@ -99,8 +142,8 @@ const getById = async (payload) => {
         result: data.result.map((item) => {
             const averageExp = average(item.expectation.map(answer => answer.answer))
             const averagePer = average(item.perception.map(answer => answer.answer))
-            const gap = averagePer - averageExp
-            const resultInterpretation = interpretation(gap)
+            const gap = (averagePer - averageExp).toFixed(2)
+            const resultInterpretation = interpretation(gap, item.dimension)
             return ({
                 dimension: item.dimension,
                 average : {
