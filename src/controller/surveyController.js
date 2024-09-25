@@ -26,6 +26,18 @@ const getAll = async (req, res, next) =>{
         next(error);
     }
 }
+const getAllAverage = async (req, res, next) => {
+  try {
+    const data = await SurveyService.getAllAverage();
+    res.status(200).json({
+      status: 200,
+      message: "succes retrieved all surveys data!",
+      data: data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getById = async(req, res,next) => {
     try {
@@ -40,4 +52,4 @@ const getById = async(req, res,next) => {
     }
 }
 
-export default {create, getById,getAll}
+export default {create, getById,getAll, getAllAverage}
